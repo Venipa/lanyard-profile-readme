@@ -83,13 +83,26 @@ If you don't want people seeing the profile you have on Discord, append the quer
 
 If you don't want people seeing the your activity, append the query param `hideActivity=true` to the end of the URL or use `hideActivity=whenNotUsed` to hide activity section when there's no activity to display. Activity are shown by default.
 
-### ___Hide Spotify___
-
-If you don't want people seeing your Spotify activity, append the query param `hideSpotify=true` to the end of the URL. Spotify activity is shown by default.
-
 ### ___Hide App by ID___
 
 If you don't want to display a specific application, append the query param `ignoreAppId=:app_id` to the end of the URL, IDs separate by `,`.
+
+### ___Show Certain Activity Types___
+
+If you don't want people seeing your specific type of activity, append the query param `activityType=:activity_type` to the end of the URL. All activity types are shown by default.
+
+Available activity types:
+
+- `all` # show all activity types
+- `listening` # Show listening activity
+- `streaming` # Show streaming activity
+- `playing` # Show playing activity
+- `watching` # Show watching activity
+- `custom` # Show custom activity
+- `competing` # Show competing activity? idk
+- `spotify` # Show Spotify activity
+- `ytm` # Show YouTube Music activity (custom implemented app ids: [Venipa/ytmdesktop2](https://github.com/Venipa/ytmdesktop2))
+
 
 ## ___Example URL and result___
 

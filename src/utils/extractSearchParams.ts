@@ -26,7 +26,6 @@ export function extractSearchParams(
       ? params.hideActivity
       : false
   ) as boolean | "whenNotUsed";
-  const hideSpotify = parseBool(params.hideSpotify);
 
   let hideTag = parseBool(params.hideTag);
   if (!data.discord_user.primary_guild) hideTag = true;
@@ -54,7 +53,6 @@ export function extractSearchParams(
     hideBadges,
     hideProfile,
     hideActivity,
-    hideSpotify,
     hideTag,
     animatedDecoration,
     hideDecoration,

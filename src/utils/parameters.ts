@@ -11,7 +11,6 @@ export type ProfileSettings = {
   hideBadges?: boolean;
   hideProfile?: boolean;
   hideActivity?: boolean | "whenNotUsed";
-  hideSpotify?: boolean;
   hideTag?: boolean;
   hideDecoration?: boolean;
   ignoreAppId?: string[];
@@ -34,14 +33,13 @@ export type SearchParams = {
   hideBadges?: string;
   hideProfile?: string;
   hideActivity?: string;
-  hideSpotify?: string;
   hideTag?: string;
   hideDecoration?: string;
+  activityType?: ActivityType;
   ignoreAppId?: string;
   showDisplayName?: string;
   borderRadius?: string;
   idleMessage?: string;
-  activityType?: ActivityType;
 };
 
 export type IParameterInfo = Array<
@@ -191,30 +189,8 @@ export const PARAMETER_INFO: IParameterInfo = [
     description: "Hides your activity, keeps your profile.",
   },
   {
-    parameter: "hideSpotify",
-    type: "boolean",
-    title: "Hide Spotify",
-    description: "Hides your Spotify activity only.",
-  },
-  {
-    parameter: "ignoreAppId",
-    type: "string",
-    title: "Hide App by ID",
-    description: "Hide apps by their respective ID, as a comma-separated list.",
-    options: {
-      placeholder: "1302143410907648071, 1302132259368861759",
-    },
-  },
-  {
-    parameter: "hideDiscrim",
-    type: "boolean",
-    title: "Hide Discriminator",
-    description: "Hides your discriminator. (DEPRECATED, RIP)",
-    deprecated: true,
-  },
-  {
     parameter: "activityType",
-    type: "string",
+    type: "list",
     title: "Activity Type",
     description: "Changes the activity type to show.",
     options: {
@@ -260,13 +236,29 @@ export const PARAMETER_INFO: IParameterInfo = [
       ],
     },
   },
+  {
+    parameter: "ignoreAppId",
+    type: "string",
+    title: "Hide App by ID",
+    description: "Hide apps by their respective ID, as a comma-separated list.",
+    options: {
+      placeholder: "1302143410907648071, 1302132259368861759",
+    },
+  },
+  {
+    parameter: "hideDiscrim",
+    type: "boolean",
+    title: "Hide Discriminator",
+    description: "Hides your discriminator. (DEPRECATED, RIP)",
+    deprecated: true,
+  },
 ].sort((a, b) => b.type.localeCompare(a.type)) as IParameterInfo;
 
 export const parseListParameter = (key: string, string: string | undefined): string | null => {
-  const param = PARAMETER_INFO.find((param) => param.parameter === key) as any;
+  const param = PARAMETER_INFO.find((param) => param.parameter === key) as IParameterInfo[number] & { options: { placeholder: string; list: { value: string }[] } };
   if (param.type !== "list" || !param.options?.list) return null;
   if (!string || !/[a-zA-Z]+/.test(string)) return param.options.placeholder;
-  if (!param.options.list.find((item: { value: string }) => item.value === string)) return param.options.placeholder;
+  if (!param.options.list.find((item) => item.value === string)) return param.options.placeholder;
   return string;
 };
 

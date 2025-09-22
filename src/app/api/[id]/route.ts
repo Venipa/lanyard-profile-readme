@@ -49,7 +49,7 @@ export async function GET(
         ...(LANYARD_API_KEY && { "Authorization": `${LANYARD_API_KEY}` }),
       },
     }
-  ).then(async (res) => (await res.json()) as Root & { error?: string }).then(parseLanyardData);
+  ).then(res => res.json()).then(s => parseLanyardData(s as Root) as Root & { error?: string });
 
   if ("error" in lanyardData || !lanyardData.success) {
     return Response.json(
@@ -68,14 +68,14 @@ export async function GET(
   );
   // Generate SVG
   try {
-    const images = await fetchUserImages(lanyardData.data, settings);
+    const images = await fetchUserImages(lanyardData.data, settings as ProfileSettings);
 
     // Render React SVG component to string
     const svgString = ReactDOMServer.renderToStaticMarkup(
       await ProfileCard({
         data: lanyardData.data,
         settings: settings as ProfileSettings,
-        images: images,
+        images,
       })
     );
 

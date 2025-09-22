@@ -1,4 +1,5 @@
 import { Activity, Data } from "@/utils/LanyardTypes";
+import { extractAlbumState } from "@/utils/LanyardUtils";
 import { Badges, UnknownIconDark, UnknownIconLight } from "@/utils/badges";
 import { elapsedTime, getFlags } from "@/utils/helpers";
 import { activityTypeToLiteral, ProfileSettings } from "@/utils/parameters";
@@ -29,7 +30,6 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     hideBadges,
     hideProfile,
     hideActivity,
-    hideSpotify,
     hideTag,
     hideDecoration,
     activityType = "all",
@@ -88,14 +88,12 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     .filter(
       (activity) => !ignoreAppId?.includes(activity.application_id ?? "")
     );
-  const activity: Activity | undefined =
-    activities.length > 0 ? activities[0] : undefined;
+  const activity: Activity | undefined = activities.length > 0 ? activities[0] : undefined;
   
-  const isListening = data.listening_to_spotify || data.listening_to_youtube_music;
   
-  const hideListening = activity && (activityType === "spotify" && data.listening_to_spotify || activityType === "ytm" && data.listening_to_youtube_music);
+  const hideListening = (activity && (activityType === "all" || activityType !== "spotify" && data.listening_to_spotify || activityType !== "ytm" && data.listening_to_youtube_music));
   
-  const album = data.spotify || data.youtube_music;
+  const { album, isListening } = extractAlbumState(data);
   
   const width = "410px";
   const height = (() => {
@@ -522,9 +520,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
           ) : null}
           {isListening &&
           !activity &&
-          !hideListening &&
-          data.activities[Object.keys(data.activities).length - 1].type ===
-            2 ? (
+          !hideListening ? (
             <div
               style={{
                 display: "flex",
@@ -569,7 +565,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     textTransform: "uppercase",
                   }}
                 >
-                  Listening to Spotify...
+                  Listening to {data.listening_to_youtube_music ? "YouTube Music" : "Spotify"}...
                 </p>
                 <p
                   style={{
