@@ -104,11 +104,10 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
       (activity) => !ignoreAppId?.includes(activity.application_id ?? "")
     );
   const activity: Activity | undefined = activities.length > 0 ? activities[0] : undefined;
-  
-  
-  const hideListening = (activity && (activityType === "all" || activityType !== "spotify" && data.listening_to_spotify || activityType !== "ytm" && data.listening_to_youtube_music));
-  
+
   const { album, isListening } = extractAlbumState(data);
+  const hideListening = (activity && (activityType === "all" || activityType === "listening") ? !isListening : activityType === "spotify" ? !data.listening_to_spotify : activityType === "ytm" ? !data.listening_to_youtube_music : true);
+  
   
   const width = "410px";
   const height = (() => {
@@ -532,9 +531,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 ) : null}
               </div>
             </div>
-          ) : null}
-          {isListening &&
-          !hideListening ? (
+          ) : isListening && !hideListening && album?.album_art_url ? (
             <div
               style={{
                 display: "flex",
@@ -610,10 +607,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 </p>
               </div>
             </div>
-          ) : null}
-          {!activity &&
-          (!isListening || hideListening) &&
-          !hideActivity ? (
+          ) : !hideActivity && (
             <div
               style={{
                 display: "flex",
@@ -635,7 +629,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 {idleMessage}
               </p>
             </div>
-          ) : null}
+          )}
         </ForeignDiv>
       </foreignObject>
     </svg>
