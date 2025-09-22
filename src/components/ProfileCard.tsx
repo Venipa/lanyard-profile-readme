@@ -398,7 +398,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
             </div>
           ) : null}
 
-          {activity ? (
+          {activity && (!isListening || !album?.album_art_url) ? (
             <div
               style={{
                 display: "flex",
@@ -534,7 +534,6 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
             </div>
           ) : null}
           {isListening &&
-          !activity &&
           !hideListening ? (
             <div
               style={{
