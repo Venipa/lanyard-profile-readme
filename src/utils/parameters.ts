@@ -1,3 +1,4 @@
+type ActivityType = "all" | "listening" | "streaming" | "playing" | "watching" | "custom" | "competing" | "ytm" | "spotify";
 export type ProfileSettings = {
   theme?: string;
   bg?: string;
@@ -18,6 +19,7 @@ export type ProfileSettings = {
   borderRadius?: string;
   idleMessage?: string;
   optimized?: boolean;
+  activityType?: ActivityType;
 };
 
 export type SearchParams = {
@@ -39,6 +41,7 @@ export type SearchParams = {
   showDisplayName?: string;
   borderRadius?: string;
   idleMessage?: string;
+  activityType?: ActivityType;
 };
 
 export type IParameterInfo = Array<
@@ -209,4 +212,72 @@ export const PARAMETER_INFO: IParameterInfo = [
     description: "Hides your discriminator. (DEPRECATED, RIP)",
     deprecated: true,
   },
+  {
+    parameter: "activityType",
+    type: "string",
+    title: "Activity Type",
+    description: "Changes the activity type to show.",
+    options: {
+      placeholder: "all",
+      list: [
+        {
+          name: "All",
+          value: "all",
+        },
+        {
+          name: "Listening",
+          value: "listening",
+        },
+        {
+          name: "Streaming",
+          value: "streaming",
+        },
+        {
+          name: "Playing",
+          value: "playing",
+        },
+        
+        {
+          name: "Watching",
+          value: "watching",
+        },
+        {
+          name: "Custom",
+          value: "custom",
+        },
+        {
+          name: "Competing",
+          value: "competing",
+        },
+        {
+          name: "Spotify",
+          value: "spotify",
+        },
+        {
+          name: "YouTube Music",
+          value: "ytm",
+        }
+      ],
+    },
+  },
 ].sort((a, b) => b.type.localeCompare(a.type)) as IParameterInfo;
+
+export const parseListParameter = (key: string, string: string | undefined): string | null => {
+  const param = PARAMETER_INFO.find((param) => param.parameter === key) as any;
+  if (param.type !== "list" || !param.options?.list) return null;
+  if (!string || !/[a-zA-Z]+/.test(string)) return param.options.placeholder;
+  if (!param.options.list.find((item: { value: string }) => item.value === string)) return param.options.placeholder;
+  return string;
+};
+
+export const activityTypeToLiteral = (type: number): ActivityType => {
+  switch (type) {
+    case 0: return "playing";
+    case 1: return "streaming";
+    case 2: return "listening";
+    case 3: return "watching";
+    case 4: return "custom";
+    case 5: return "competing";
+  }
+  return "all";
+};

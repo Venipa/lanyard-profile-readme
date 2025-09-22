@@ -1,7 +1,7 @@
 import { Activity, Data } from "@/utils/LanyardTypes";
 import { Badges, UnknownIconDark, UnknownIconLight } from "@/utils/badges";
 import { elapsedTime, getFlags } from "@/utils/helpers";
-import { ProfileSettings } from "@/utils/parameters";
+import { activityTypeToLiteral, ProfileSettings } from "@/utils/parameters";
 import React, { DetailedHTMLProps, HTMLAttributes } from "react";
 
 interface ProfileCardProps {
@@ -32,6 +32,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     hideSpotify,
     hideTag,
     hideDecoration,
+    activityType = "all",
     ignoreAppId,
     hideDiscrim,
     showDisplayName,
@@ -71,6 +72,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
       break;
   }
 
+
   const flags: string[] = getFlags(data.discord_user.public_flags);
   if (data.discord_user.avatar && data.discord_user.avatar.includes("a_"))
     flags.push("Nitro");
@@ -81,14 +83,20 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
 
   const activities = data.activities
     // Filter only type 0
-    .filter((activity) => activity.type === 0)
+    .filter((activity) => activityType === "all" || activityType === activityTypeToLiteral(activity.type))
     // Filter ignored app ID
     .filter(
       (activity) => !ignoreAppId?.includes(activity.application_id ?? "")
     );
   const activity: Activity | undefined =
     activities.length > 0 ? activities[0] : undefined;
-
+  
+  const isListening = data.listening_to_spotify || data.listening_to_youtube_music;
+  
+  const hideListening = activity && (activityType === "spotify" && data.listening_to_spotify || activityType === "ytm" && data.listening_to_youtube_music);
+  
+  const album = data.spotify || data.youtube_music;
+  
   const width = "410px";
   const height = (() => {
     if (hideProfile) return "130";
@@ -96,10 +104,10 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     if (
       hideActivity === "whenNotUsed" &&
       !activity &&
-      !data.listening_to_spotify
+      !isListening
     )
       return "91";
-    if (hideSpotify && data.listening_to_spotify) return "210";
+    if (hideListening && isListening) return "210";
     return "210";
   })();
 
@@ -110,10 +118,10 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     if (
       hideActivity === "whenNotUsed" &&
       !activity &&
-      !data.listening_to_spotify
+      !isListening
     )
       return "81";
-    if (hideSpotify && data.listening_to_spotify) return "200";
+    if (hideListening && isListening) return "200";
     return "200";
   })();
 
@@ -162,7 +170,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                   hideActivity === true ||
                   (hideActivity === "whenNotUsed" &&
                     !activity &&
-                    !data.listening_to_spotify)
+                    !isListening)
                     ? "none"
                     : `solid 0.5px ${
                         theme === "dark"
@@ -512,9 +520,9 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
               </div>
             </div>
           ) : null}
-          {data.listening_to_spotify &&
+          {isListening &&
           !activity &&
-          !hideSpotify &&
+          !hideListening &&
           data.activities[Object.keys(data.activities).length - 1].type ===
             2 ? (
             <div
@@ -534,7 +542,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 }`}
                 alt="Album Cover"
                 style={{
-                  border: data.spotify.album_art_url
+                  border: album.album_art_url
                     ? "border: solid 0.5px #222"
                     : undefined,
                   width: "80px",
@@ -575,7 +583,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     margin: "7px 0",
                   }}
                 >
-                  {data.spotify.song}
+                  {album.song}
                 </p>
                 <p
                   style={{
@@ -588,13 +596,13 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     color: theme === "dark" ? "#ccc" : "#777",
                   }}
                 >
-                  By {data.spotify.artist.replace(/; /g, ", ")}
+                  By {album.artist.replace(/; /g, ", ")}
                 </p>
               </div>
             </div>
           ) : null}
           {!activity &&
-          (!data.listening_to_spotify || hideSpotify) &&
+          (!isListening || hideListening) &&
           !hideActivity ? (
             <div
               style={{

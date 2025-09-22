@@ -1,5 +1,5 @@
 import { Data } from "./LanyardTypes";
-import { SearchParams } from "./parameters";
+import { parseListParameter, SearchParams } from "./parameters";
 
 export const parseBool = (string: string | undefined): boolean =>
   string === "true" ? true : false;
@@ -8,6 +8,7 @@ export const parseAppId = (string: string | undefined): Array<string> => {
   if (string === undefined) return [];
   return string.split(",");
 };
+
 
 export function extractSearchParams(
   params: SearchParams,
@@ -45,6 +46,7 @@ export function extractSearchParams(
 
   const clanBackgroundColor: string =
     params.theme === "light" ? "#e0dede" : "#111214";
+  const activityType = parseListParameter("activityType", params.activityType) || "all";
 
   return {
     hideStatus,
@@ -66,5 +68,6 @@ export function extractSearchParams(
     clanBackgroundColor: params.clanBackgroundColor ?? clanBackgroundColor,
     borderRadius: params.borderRadius,
     idleMessage: params.idleMessage,
+    activityType,
   };
 }

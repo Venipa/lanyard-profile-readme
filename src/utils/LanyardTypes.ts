@@ -8,6 +8,8 @@ export interface Root {
 export interface Data {
   spotify: Spotify;
   listening_to_spotify: boolean;
+  listening_to_youtube_music: boolean;
+  youtube_music: YoutubeMusic;
   discord_user: DiscordUser;
   discord_status: string;
   activities: Activity[];
@@ -16,6 +18,15 @@ export interface Data {
 }
 
 export interface Spotify {
+  track_id: string;
+  timestamps: Timestamps;
+  song: string;
+  artist: string;
+  album_art_url: string;
+  album: string;
+}
+
+export interface YoutubeMusic {
   track_id: string;
   timestamps: Timestamps;
   song: string;

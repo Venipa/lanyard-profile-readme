@@ -1,8 +1,10 @@
 import ProfileCard from "@/components/ProfileCard";
 import { Root } from "@/utils/LanyardTypes";
+import { parseLanyardData } from "@/utils/LanyardUtils";
 import { LANYARD_API_KEY, LANYARD_API_URL } from "@/utils/env";
 import { extractSearchParams } from "@/utils/extractSearchParams";
 import { fetchUserImages } from "@/utils/fetchUserImages";
+import { type ProfileSettings } from "@/utils/parameters";
 import { isSnowflake } from "@/utils/snowflake";
 
 export async function GET(
@@ -47,7 +49,7 @@ export async function GET(
         ...(LANYARD_API_KEY && { "Authorization": `${LANYARD_API_KEY}` }),
       },
     }
-  ).then(async (res) => (await res.json()) as Root & { error?: string });
+  ).then(async (res) => (await res.json()) as Root & { error?: string }).then(parseLanyardData);
 
   if ("error" in lanyardData || !lanyardData.success) {
     return Response.json(
@@ -60,12 +62,10 @@ export async function GET(
       }
     );
   }
-
   const settings = await extractSearchParams(
     Object.fromEntries(searchParams.entries()),
     lanyardData.data
   );
-
   // Generate SVG
   try {
     const images = await fetchUserImages(lanyardData.data, settings);
@@ -74,7 +74,7 @@ export async function GET(
     const svgString = ReactDOMServer.renderToStaticMarkup(
       await ProfileCard({
         data: lanyardData.data,
-        settings: settings,
+        settings: settings as ProfileSettings,
         images: images,
       })
     );
