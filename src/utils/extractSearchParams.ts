@@ -63,7 +63,7 @@ export function extractSearchParams(
     optimized,
     theme: params.theme,
     bg: params.bg,
-    clanBackgroundColor: params.clanBackgroundColor ?? clanBackgroundColor,
+    clanBackgroundColor: /^#?[0-9A-Fa-f]{3,6}$/.test(params.clanBackgroundColor ?? "") ? params.clanBackgroundColor?.replace(/^#/, "") : clanBackgroundColor,
     borderRadius: params.borderRadius,
     idleMessage: params.idleMessage,
     activityType,
