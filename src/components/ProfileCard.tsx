@@ -18,6 +18,21 @@ interface ProfileCardProps {
     albumCover: string | null;
   };
 }
+type ListeningServices = "spotify" | "ytm";
+const ListeningServiceVariables: { light: { [key in ListeningServices]: string }, dark: { [key in ListeningServices]: string }, title: { [key in ListeningServices]: string } } = {
+  light: {
+    spotify: "#1DB954",
+    ytm: "#EA4335",
+  },
+  dark: {
+    spotify: "#1DB954",
+    ytm: "#EA4335"
+  },
+  title: {
+    spotify: "Listening to Spotify...",
+    ytm: "Listening to YouTube Music...",
+  }
+}
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({
   settings,
@@ -560,12 +575,12 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                   style={{
                     fontSize: "0.75rem",
                     fontWeight: "bold",
-                    color: theme === "dark" ? "#1CB853" : "#0d943d",
+                    color: ListeningServiceVariables[theme as "light" | "dark"][data.listening_to_youtube_music ? "ytm" : "spotify"],
                     marginBottom: "15px",
                     textTransform: "uppercase",
                   }}
                 >
-                  Listening to {data.listening_to_youtube_music ? "YouTube Music" : "Spotify"}...
+                  {ListeningServiceVariables.title[data.listening_to_youtube_music ? "ytm" : "spotify"]}
                 </p>
                 <p
                   style={{
